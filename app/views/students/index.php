@@ -49,9 +49,9 @@
                     <td class ="px-4 py-2 text-left">085849264487</td>
                     <td class ="px-4 py-2">
                         <div class ="flex justify-center items-center gap-4">
-                            <a href="" class= text-green-500>Detail</a>
-                            <a href="" class= text-yellow-500>Edit</a>
-                            <a href="" class= text-red-500>Hapus</a>
+                            <a href="/students/1" class="text-green-500">Detail</a>
+                            <a href="" class="text-yellow-500">Edit</a>
+                            <a href="" class="text-red-500">Hapus</a>
                         </div>
                     </td>
                 </tr>
