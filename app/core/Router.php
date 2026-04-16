@@ -7,49 +7,55 @@ use App\Controllers\StudentController;
 class Router
 {
 
-private array $routes = [];
+    private array $routes = [];
 
-public function add(string $method, string $uri, string $controller, string $function)
-{
-    $this->routes[] = [
-        'method' => $method,
-        'uri' => $uri,
-        'controller' => $controller,
-        'function' => $function,
-    ]; 
-
-}
-public function run()
+    public function add(string $method, string $uri, string $controller, string $function)
     {
-    $method = $_SERVER['REQUEST_METHOD'];
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $this->routes[] = [
+            'method' => $method,
+            'uri' => $uri,
+            'controller' => $controller,
+            'function' => $function,
+        ];
 
-    foreach($this->routes as $router) {
-       $pattern = str_replace(
-           '{id}', 
-           '([0-9]+)',
-           $router['uri']
-       );
-
-       $pattern = '#^' .  $pattern . '$#';
-
-       if (preg_match($pattern, $uri, $matches)){
-        require_once '../app/controllers/' . $router['controller'] . '.php';
-        array_shift($matches);
-
-        $controllerClass ='App\\Controllers\\' . $router['controller'];
-        $controller= new $controllerClass();
-
-        $function = $router['function'];
-        call_user_func_array([$controller, $function], $matches);
-
-        return;
-
-       }
     }
+    public function run()
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
 
-    http_response_code(404);
-    echo'<h1>404 - Page Not Found</h1>';
+        //mencegah spoofing
+        if ($method === 'POST' && isset($_POST['_method'])) {
+            $method = $_POST['method'];
+        }
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        foreach ($this->routes as $router) {
+            $pattern = str_replace(
+                '{id}',
+                '([0-9]+)',
+                $router['uri']
+            );
+
+            $pattern = '#^' . $pattern . '$#';
+
+            //langkah tambahan mencegah spoofing
+            if ($method === $router['method'] &&  preg_match($pattern, $uri, $matches)) {
+                require_once '../app/controllers/' . $router['controller'] . '.php';
+                array_shift($matches);
+
+                $controllerClass = 'App\\Controllers\\' . $router['controller'];
+                $controller = new $controllerClass();
+
+                $function = $router['function'];
+                call_user_func_array([$controller, $function], $matches);
+
+                return;
+
+            }
+        }
+
+        http_response_code(404);
+        echo '<h1>404 - Page Not Found</h1>';
     }
 
 
