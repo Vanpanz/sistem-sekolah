@@ -25,7 +25,7 @@ class Router
 
         //mencegah spoofing
         if ($method === 'POST' && isset($_POST['_method'])) {
-            $method = $_POST['method'];
+            $method = strtoupper($_POST['_method']);
         }
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -57,6 +57,5 @@ class Router
         http_response_code(404);
         echo '<h1>404 - Page Not Found</h1>';
     }
-
 
 }
